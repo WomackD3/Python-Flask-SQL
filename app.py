@@ -28,6 +28,34 @@ db.create_tables([Person])
 Person(name='Mario', age=30).save()
 Person(name='Mack', age=18).save()
 
+@app.route('/person/', methods=['GET', 'POST'])
+@app.route('/person/<id>', methods=['GET', 'PUT', 'DELETE'])
+def endpoint(id=None):
+    if request.method == 'GET': 
+      if id:
+          return jsonify(
+              model_to_dict(
+                  Person.get(
+                     Person.id == id
+                  )
+              )
+          )
+      else:
+          people_list = []
+          for person in Person.select():
+              people_list.append(model_to_dict(person))
+          return jsonify(people_list)
+
+    if request.method == 'PUT':
+          return 'PUT request'
+
+    if request.method == 'POST' :
+          new_person = dict_to_model(Person, request.get_json())
+          new_person.save()
+          return jsonify({'great success': True})
+
+    if request.method == 'DELETE':
+          return 'DELETE request'
 
 # @app.route('/')
 # def index():
